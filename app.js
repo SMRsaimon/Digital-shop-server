@@ -28,6 +28,20 @@ client.connect(err => {
       })
   });
 
+  app.delete("/deleteProduct/:id", (req, res) => {
+
+    console.log(req.params.id)
+    productCollection.deleteOne({
+      _id: ObjectID(req.params.id)
+    })
+      .then(result => {
+        res.send(result.deletedCount > 0)
+      })
+
+
+
+  })
+
 
   app.get("/home", (req, res) => {
 
@@ -61,6 +75,19 @@ client.connect(err => {
       .catch(err => {
         console.log(err)
       })
+
+  });
+
+  app.get("/Order", (req, res) => {
+    console.log(req.query.email)
+
+    shoppingCollection.find({ email: req.query.email })
+      .toArray((err, documents) => {
+
+        res.send(documents)
+
+      })
+
 
   });
 
