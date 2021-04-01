@@ -13,10 +13,12 @@ app.use(cors())
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
-  const collection = client.db("bdshop").collection("products");
+  const productCollection = client.db("bdshop").collection("products");
+
+  const shoppingCollection = client.db("bdshop").collection("shopping");
   app.post("/addProduct", (req, res) => {
 
-    collection.insertOne(req.body)
+    productCollection.insertOne(req.body)
       .then(result => {
 
         res.send(result.insertedCount > 0)
@@ -29,23 +31,36 @@ client.connect(err => {
 
   app.get("/home", (req, res) => {
 
-    collection.find({})
+    productCollection.find({})
       .toArray((err, documents) => {
 
         res.send(documents)
       })
 
-    app.get("/buyProduct/:id", (req, res) => {
+  });
 
-      console.log(req.params.id)
-      collection.find({ _id: ObjectID(req.params.id) })
-        .toArray((err, documents) => {
-          res.send(documents[0])
-
-        })
+  app.get("/buyProduct/:id", (req, res) => {
 
 
-    });
+    productCollection.find({ _id: ObjectID(req.params.id) })
+      .toArray((err, documents) => {
+        res.send(documents[0])
+
+      })
+
+
+  });
+  app.post("/checkOut", (req, res) => {
+
+
+    shoppingCollection.insertOne(req.body)
+      .then(result => {
+
+        res.send(result.insertedCount > 0)
+      })
+      .catch(err => {
+        console.log(err)
+      })
 
   });
 
